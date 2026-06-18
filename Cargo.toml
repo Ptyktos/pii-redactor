@@ -1,0 +1,37 @@
+# pii-redactor — the Dioxus app (web / desktop / android / iOS from one codebase).
+#
+# Its OWN cargo workspace (the empty [workspace] table below): it targets wasm32
+# (web) and the mobile/desktop renderers, builds with `dx` (the Dioxus CLI), and
+# pulls a heavy UI dependency tree — none of which belongs in the service
+# workspace (../Cargo.toml `exclude`s this dir). It path-depends on `pii-core`
+# with `default-features = false`, so the engine that redacts here is byte-for-byte
+# the same one the HTTP service runs — minus the ONNX/model NER pass (there is no
+# model in a browser/phone). Redaction therefore happens entirely on-device.
+[package]
+name = "pii-redactor"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+authors = ["TWN Systems / Tasmanian Cloud"]
+publish = false
+
+[dependencies]
+dioxus = { version = "0.7" }
+pii-core = { path = "../crates/pii-core", default-features = false }
+# Only used to safely JSON-encode strings passed into clipboard/download JS.
+serde_json = "1"
+
+[features]
+default = ["web"]
+web = ["dioxus/web"]
+desktop = ["dioxus/desktop"]
+mobile = ["dioxus/mobile"]
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true
+
+# Standalone workspace — deliberately not a member of the service workspace.
+[workspace]

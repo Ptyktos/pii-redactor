@@ -1,0 +1,9 @@
+# Dioxus app config. Minimal on purpose — most head/meta is set at runtime from
+# the app (document::Title / document::Meta) so it works identically on every
+# platform. This just gives the static index.html a sensible title before the
+# wasm boots.
+[application]
+name = "pii-redactor"
+
+[web.app]
+title = "Redactor — 100% local PII & secret redaction"
