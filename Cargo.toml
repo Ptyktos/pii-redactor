@@ -2,11 +2,12 @@
 #
 # Its OWN cargo workspace (the empty [workspace] table below): it targets wasm32
 # (web) and the mobile/desktop renderers, builds with `dx` (the Dioxus CLI), and
-# pulls a heavy UI dependency tree — none of which belongs in the service
-# workspace (../Cargo.toml `exclude`s this dir). It path-depends on `pii-core`
-# with `default-features = false`, so the engine that redacts here is byte-for-byte
-# the same one the HTTP service runs — minus the ONNX/model NER pass (there is no
-# model in a browser/phone). Redaction therefore happens entirely on-device.
+# pulls a heavy UI dependency tree — none of which belongs in the pii-svc service
+# workspace this was split out of. It depends on `pii-core` (from Ptyktos/pii-svc,
+# git dependency since this is now a separate repo) with `default-features = false`,
+# so the engine that redacts here is byte-for-byte the same one the HTTP service
+# runs — minus the ONNX/model NER pass (there is no model in a browser/phone).
+# Redaction therefore happens entirely on-device.
 [package]
 name = "pii-redactor"
 version = "0.1.0"
@@ -17,7 +18,7 @@ publish = false
 
 [dependencies]
 dioxus = { version = "0.7" }
-pii-core = { path = "../crates/pii-core", default-features = false }
+pii-core = { git = "https://github.com/Ptyktos/pii-svc", package = "pii-core", default-features = false }
 # Only used to safely JSON-encode strings passed into clipboard/download JS.
 serde_json = "1"
 

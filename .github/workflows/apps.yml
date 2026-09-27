@@ -1,0 +1,41 @@
+name: apps
+
+# Build the web target (the client app targets wasm32 via Dioxus). Desktop/
+# mobile targets need their own SDKs (Android NDK, Xcode, webview dev
+# headers) that aren't present in CI -- see the README's Targets table.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "Cargo.toml"
+      - "Dioxus.toml"
+      - ".github/workflows/apps.yml"
+  pull_request:
+    paths:
+      - "src/**"
+      - "Cargo.toml"
+      - "Dioxus.toml"
+      - ".github/workflows/apps.yml"
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  web:
+    name: web app (dx build --web --release)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+      - uses: cargo-bins/cargo-binstall@main
+      - name: install dioxus-cli
+        run: cargo binstall -y dioxus-cli@0.7.9
+      - name: build web (release)
+        run: dx build --web --release

@@ -2,16 +2,17 @@
 
 A [Dioxus](https://dioxuslabs.com) app that strips PII and secrets from text
 **entirely on the device** — web, desktop, Android and iOS from this one Rust
-codebase. The detection engine is [`pii-core`](../crates/pii-core) (the same one
-[`pii-svc`](../crates/pii-svc) runs), compiled in with `default-features = false`
-so it's the pure-Rust passes only — **regex+checksum, secrets, intl national
-IDs, identity denylist, and the optional resonance pass** — no ONNX model. On
+codebase. The detection engine is [`pii-core`](https://github.com/Ptyktos/pii-svc/tree/main/crates/pii-core)
+(the same one [`pii-svc`](https://github.com/Ptyktos/pii-svc) runs, pulled in
+here as a git dependency), compiled in with `default-features = false` so it's
+the pure-Rust passes only — **regex+checksum, secrets, intl national IDs,
+identity denylist, and the optional resonance pass** — no ONNX model. On
 the web target this runs as WebAssembly in the tab; on desktop/mobile it runs
 natively. **Nothing is uploaded — no network call, no account, no telemetry.**
 
 > The model-backed NER pass is intentionally absent here (a GLiNER ONNX model has
 > no place in a browser/phone). For that breadth, point at a `pii-svc` instance
-> or the [Worker](../worker)'s `POST /redact`.
+> or the [Worker](https://github.com/Ptyktos/pii-svc/tree/main/worker)'s `POST /redact`.
 
 ## Prerequisites
 
@@ -57,19 +58,25 @@ rather than wired into the `apps` workflow.
 - **Secrets & IDs** (on) — the `pii-core` regex+checksum / secrets / intl passes:
   emails, phones, IPs, credit cards (Luhn), AU TFN/ABN/Medicare, SSN/IBAN/national
   IDs, API keys, PEM private keys, JWTs, `keyword=VALUE` secrets.
-- **Aggressive (catch unknown)** (off) — the [resonance](../docs/RESONANCE.md)
-  prose-membership pass. Catches high-entropy / never-before-seen secrets and odd
-  spans the patterns miss, at the cost of more false positives. Uses bundled
-  English prose as its model (no download).
+- **Aggressive (catch unknown)** (off) — the resonance prose-membership pass
+  (see [`pii-svc`'s docs](https://github.com/Ptyktos/pii-svc/tree/main/docs)).
+  Catches high-entropy / never-before-seen secrets and odd spans the patterns
+  miss, at the cost of more false positives. Uses bundled English prose as its
+  model (no download).
 - **Advanced → custom names** — a literal denylist (one term per line) redacted as
   `[CUSTOM]`, for project names / handles / people the detectors don't know.
 
 ## Layout
 
 ```
-app/
-  Cargo.toml      standalone workspace; dioxus + pii-core (no-default-features)
-  Dioxus.toml     app name + static <title>
-  src/main.rs     the App component, redaction wiring, copy/download
-  src/styles.rs   the stylesheet (one trusted constant)
+Cargo.toml      standalone workspace; dioxus + pii-core (git dependency, no-default-features)
+Dioxus.toml     app name + static <title>
+src/main.rs     the App component, redaction wiring, copy/download
+src/styles.rs   the stylesheet (one trusted constant)
 ```
+
+## Provenance
+
+Split out of [`Ptyktos/pii-svc`](https://github.com/Ptyktos/pii-svc)'s `app/`
+directory (2026-09-27) so this client app can version and release
+independently of the HTTP service. Full history preserved.
