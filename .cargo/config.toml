@@ -1,0 +1,9 @@
+# Cargo's bundled libgit2 sometimes fails to fetch a git dependency pinned to a
+# non-tip historical commit from GitHub ("revision not found" -> a misleading
+# "failed to authenticate" fallback), even for a public repo with no auth
+# needed. Shelling out to the real `git` binary handles GitHub's smart-HTTP
+# protocol correctly. Real incident: this exact failure hit pii-core's git
+# dependency on a fresh CI clone once pii-svc's main moved past the commit
+# Cargo.lock had pinned.
+[net]
+git-fetch-with-cli = true

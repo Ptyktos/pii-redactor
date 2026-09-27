@@ -3701,7 +3701,7 @@ dependencies = [
 [[package]]
 name = "pii-core"
 version = "0.1.0"
-source = "git+https://github.com/Ptyktos/pii-svc#12698b2d5c38e85b620f6b94b0af166729ec940e"
+source = "git+https://github.com/Ptyktos/pii-svc#c936866ca76d0197d0118fce2bc90d45446cf978"
 dependencies = [
  "anyhow",
  "serde",
